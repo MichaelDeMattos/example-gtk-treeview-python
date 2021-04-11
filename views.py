@@ -80,12 +80,13 @@ class Project(ControllerCounting):
                     """ Show results in Gtk.TreeView """ 
                     quotations = self.select_quotation()
                     [self.lst_quotation.append(row.values()) for row in quotations]
-                    time.sleep(30)
 
                     if float(quotation_json["USD"]["varBid"]) >= 0.0001:
                         self.img_status.set_from_file("static/img/up.png")
                     else:
-                        self.img_status.set_from_file("../static/img/down.png")
+                        self.img_status.set_from_file("static/img/down.png")
+
+                    time.sleep(30)
         
         except Exception as error:
             print(error)
