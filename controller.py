@@ -3,7 +3,7 @@
 from models import *
 from datetime import datetime
 
-class ControllerCounting(object):
+class ControllerQuotation(object):
     def __init__(self, *args):
         ...
     
@@ -17,6 +17,7 @@ class ControllerCounting(object):
             db.rollback()
             print("Error: ", error)
     
+    """ The funciton select all history consult dollar """
     def select_quotation(self):
         try:
             Quotation = Table("quotation")
@@ -28,6 +29,15 @@ class ControllerCounting(object):
                 quotations.append(row)
             return quotations
 
+        except Exception as error:
+            db.rollback()
+            print("Error: ", error)
+
+    def delete_from_history(self):
+        try:
+            query = Quotation.delete()
+            query.execute(db)
+            
         except Exception as error:
             db.rollback()
             print("Error: ", error)
