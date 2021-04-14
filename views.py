@@ -6,23 +6,40 @@ import requests
 import threading
 from datetime import datetime
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GLib
-from controller import ControllerCounting
+from gi.repository import Gtk, GLib, Gdk
+from controller import ControllerQuotation
 
 builder = Gtk.Builder()
 
-class Project(ControllerCounting):
+class Project(ControllerQuotation):
     def __init__(self, *args, **kwargs):
         super(Project, self).__init__(*args, **kwargs)
         self.init_ui(*args)
+        
+        """ Global variables """
+        self.quotation = ""
+        self.title = ""
+        self.lst_store = []
+        self.image = ""
+        
+        """ Start create thread """
+        self.create_thread()
+        
         """ The function is given the default idle priority, glib.PRIORITY_DEFAULT_IDLE. """
-        self.idle_event_id = GLib.idle_add(self.create_thread)
+        self.idle_event_id = GLib.timeout_add(300, self.update_ui)
 
-    """ Create thread for request counting dollar """
+    """ Create thread for request quotation dollar """
     def create_thread(self):
         thread = threading.Thread(target=self.request_api_dollar)
         thread.daemon = True
         thread.start()
+        
+    """ The function update user interface """
+    def update_ui(self):
+        self.lb_coin_value.set_text(self.quotation)
+        self.main_window.set_title(self.title)
+        self.img_status.set_from_file(self.image)
+        self.idle_event_id = GLib.timeout_add(300, self.update_ui)
 
     """ Create instance for widgets content in user interface """
     def init_ui(self, *args):
@@ -30,15 +47,23 @@ class Project(ControllerCounting):
         self.lb_coin_value = builder.get_object("lb_coin_value")
         self.lst_quotation = builder.get_object("lst_quotation")
         self.main_window = builder.get_object("main_window")
-        
         self.main_window.show_all()
     
     """ This signal destroy as main_window """
     def on_main_window_destroy(self, *args):
+        """ This function delete history thas consult """
+        self.delete_from_history()
         GLib.source_remove(self.idle_event_id)
         Gtk.main_quit()
+        
+    """ This function get key press in Gtk.Window and update Gtk.TreeView """
+    def on_main_window_key_press_event(self, *args):
+        key = args[1].get_keyval()[1]
+        if key == Gdk.KEY_F5: #  Key F5
+            self.lst_quotation.clear()
+            [self.lst_quotation.append(row) for row in self.lst_store]
 
-    """ Request counting dollar using API """
+    """ Request quotation dollar using API """
     def request_api_dollar(self):
         """ 
         Response: 200 OK
@@ -60,12 +85,12 @@ class Project(ControllerCounting):
         try:
             while True:
                 quotation = requests.get(url)
-                self.lst_quotation.clear()
+                self.lst_store = []
                 if quotation.status_code == 200:
                     quotation_json = quotation.json()
                     now = datetime.now()
-                    self.main_window.set_title("Consultado em "  + now.strftime("%d/%m/%y, %H:%M:%S"))
-                    self.lb_coin_value.set_text(quotation_json["USD"]["bid"])
+                    self.title = ("Consultado em "  + now.strftime("%d/%m/%y, %H:%M:%S"))
+                    self.quotation = quotation_json["USD"]["bid"]
                     
                     """ Vars content in json """
                     coin = quotation_json["USD"]["code"]
@@ -77,14 +102,14 @@ class Project(ControllerCounting):
                     """ Register history """
                     self.insert_quotation(coin, bid, ask, varBid, date_consult)
                     
-                    """ Show results in Gtk.TreeView """ 
+                    """ Update list store """ 
                     quotations = self.select_quotation()
-                    [self.lst_quotation.append(row.values()) for row in quotations]
+                    [self.lst_store.append(row.values()) for row in quotations]
 
                     if float(quotation_json["USD"]["varBid"]) >= 0.0001:
-                        self.img_status.set_from_file("static/img/up.png")
+                        self.image = "static/img/up.png"
                     else:
-                        self.img_status.set_from_file("static/img/down.png")
+                        self.image = "static/img/down.png"
 
                     time.sleep(30)
         
