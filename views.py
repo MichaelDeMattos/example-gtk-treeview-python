@@ -36,7 +36,7 @@ class Project(ControllerQuotation):
 
     """ The function update user interface """
     def update_ui(self):
-        self.lb_coin_value.set_text(self.quotation)
+        self.lb_coin_value.set_text(" R$ " + str(round(float(self.quotation), 3)).replace(".", ","))
         self.main_window.set_title(self.title)
         self.img_status.set_from_file(self.image)
         return True
