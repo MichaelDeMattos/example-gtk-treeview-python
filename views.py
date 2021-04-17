@@ -17,10 +17,11 @@ class Project(ControllerQuotation):
         self.init_ui(*args)
 
         """ Global variables """
-        self.quotation = ""
+        self.quotation = "o."
         self.title = ""
         self.lst_store = []
         self.image = ""
+        self.loop = True
 
         """ Start create thread """
         self.create_thread()
@@ -53,6 +54,8 @@ class Project(ControllerQuotation):
     def on_main_window_destroy(self, *args):
         """ This function delete history thas consult """
         self.delete_from_history()
+        """ This function destroy thread request api dollar """
+        self.loop = False
         """ The glib.source_remove() function removes the event source specified by id """
         GLib.source_remove(self.idle_event_id)
         """ This function destroy main loop Gtk """
@@ -85,7 +88,7 @@ class Project(ControllerQuotation):
         url = "http://economia.awesomeapi.com.br/json/all/USD-BRL"
 
         try:
-            while True:
+            while self.loop == True:
                 quotation = requests.get(url)
                 self.lst_store = []
                 if quotation.status_code == 200:
