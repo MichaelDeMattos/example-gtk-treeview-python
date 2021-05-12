@@ -1,5 +1,5 @@
 # dollar
-dollar is a project to consult the quotations of the dollar U$ in comparison to the real R$.
+Convert Dollar U$ for Real R$ using RestFull API with Python and Flask 
 
 # install
 chmod +x install.sh | ./install.sh
