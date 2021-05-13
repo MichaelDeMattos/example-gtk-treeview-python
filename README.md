@@ -1,5 +1,5 @@
 # dollar
-Convert Dollar U$ for Real R$ using RestFull API with Python and Flask 
+Convert Dollar U$ for Real R$ using RestFull API with Python and Gtk 
 
 # install
 chmod +x install.sh | ./install.sh
