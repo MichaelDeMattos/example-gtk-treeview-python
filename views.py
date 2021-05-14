@@ -93,8 +93,8 @@ class Project(ControllerQuotation):
                 self.lst_store = []
                 if quotation.status_code == 200:
                     quotation_json = quotation.json()
-                    now = datetime.now()
-                    self.title = ("Consultado em "  + now.strftime("%d/%m/%y, %H:%M:%S"))
+                    dh_create = (datetime.strptime(quotation_json["USD"]["create_date"], "%Y-%m-%d %H:%M:%S"))
+                    self.title = ("Consultado em: %s" % dh_create.strftime("%d/%m/%y, %H:%M:%S"))
                     self.quotation = quotation_json["USD"]["bid"]
 
                     """ Vars content in json """
@@ -119,7 +119,7 @@ class Project(ControllerQuotation):
                     time.sleep(30)
 
         except Exception as error:
-            print(error)
+            print("Error: ", error)
 
 
 if __name__ == "__main__":
