@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import gi
+import os
 import time
 import requests
 import threading
@@ -48,6 +49,7 @@ class Project(ControllerQuotation):
         self.lb_coin_value = builder.get_object("lb_coin_value")
         self.lst_quotation = builder.get_object("lst_quotation")
         self.main_window = builder.get_object("main_window")
+        self.main_window.set_icon_from_file(os.path.join('static'+os.path.sep+'img'+os.path.sep+'faveicon.ico'))
         self.main_window.show_all()
 
     """ This signal destroy as main_window """
@@ -112,15 +114,15 @@ class Project(ControllerQuotation):
                     [self.lst_store.append(row.values()) for row in quotations]
 
                     if float(quotation_json["USD"]["varBid"]) >= 0.0001:
-                        self.image = "static/img/up.png"
+                        self.image = os.path.join("static"+os.path.sep+"img"+os.path.sep+"up.png")
+                        
                     else:
-                        self.image = "static/img/down.png"
+                        self.image = os.path.join("static"+os.path.sep+"img"+os.path.sep+"down.png")
 
                     time.sleep(30)
 
         except Exception as error:
             print("Error: ", error)
-
 
 if __name__ == "__main__":
     builder.add_from_file("templates/interface.ui")
