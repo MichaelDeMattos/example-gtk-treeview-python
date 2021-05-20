@@ -87,7 +87,7 @@ class Project(ControllerQuotation):
                  'timestamp': '1618001998',
                  'create_date': '2021-04-09 17:59:59'}}
         """
-        url = "http://economia.awesomeapi.com.br/json/all/USD-BRL"
+        url = "http://economia.awesomeapi.com.br/json/last/USD-BRL"
 
         try:
             while self.loop == True:
@@ -95,16 +95,16 @@ class Project(ControllerQuotation):
                 self.lst_store = []
                 if quotation.status_code == 200:
                     quotation_json = quotation.json()
-                    dh_create = (datetime.strptime(quotation_json["USD"]["create_date"], "%Y-%m-%d %H:%M:%S"))
+                    dh_create = (datetime.strptime(quotation_json["USDBRL"]["create_date"], "%Y-%m-%d %H:%M:%S"))
                     self.title = ("Consultado em: %s" % dh_create.strftime("%d/%m/%y, %H:%M:%S"))
-                    self.quotation = quotation_json["USD"]["bid"]
+                    self.quotation = quotation_json["USDBRL"]["bid"]
 
                     """ Vars content in json """
-                    coin = quotation_json["USD"]["code"]
-                    bid = quotation_json["USD"]["bid"]
-                    ask = quotation_json["USD"]["ask"]
-                    varBid = quotation_json["USD"]["varBid"]
-                    date_consult = quotation_json["USD"]["create_date"]
+                    coin = quotation_json["USDBRL"]["code"]
+                    bid = quotation_json["USDBRL"]["bid"]
+                    ask = quotation_json["USDBRL"]["ask"]
+                    varBid = quotation_json["USDBRL"]["varBid"]
+                    date_consult = quotation_json["USDBRL"]["create_date"]
 
                     """ Register history """
                     self.insert_quotation(coin, bid, ask, varBid, date_consult)
@@ -113,7 +113,7 @@ class Project(ControllerQuotation):
                     quotations = self.select_quotation()
                     [self.lst_store.append(row.values()) for row in quotations]
 
-                    if float(quotation_json["USD"]["varBid"]) >= 0.0001:
+                    if float(quotation_json["USDBRL"]["varBid"]) >= 0.0001:
                         self.image = os.path.join("static"+os.path.sep+"img"+os.path.sep+"up.png")
                         
                     else:
